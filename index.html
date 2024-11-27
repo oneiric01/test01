@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>숫자 맞추기 게임</title>
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        
+        .game-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        h1 {
+            color: #2563eb;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        input {
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            width: 150px;
+            margin-right: 0.5rem;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        .message {
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background-color: #f3f4f6;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>숫자 맞추기 게임</h1>
+        <p>1부터 100 사이의 숫자를 맞춰보세요!</p>
+        
+        <div class="input-group">
+            <input type="number" id="guessInput" min="1" max="100" placeholder="숫자 입력">
+            <button onclick="checkGuess()">확인</button>
+        </div>
+        
+        <div class="message" id="message">게임을 시작해보세요!</div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div>현재 시도</div>
+                <div class="stat-value" id="currentAttempts">0</div>
+            </div>
+            <div class="stat-item">
+                <div>최고 기록</div>
+                <div class="stat-value" id="bestScore">-</div>
+            </div>
+        </div>
+        
+        <button onclick="startNewGame()" style="margin-top: 1rem">새 게임</button>
+    </div>
+
+    <script>
+        let targetNumber;
+        let attempts;
+        let bestScore = null;
+        let gameActive = true;
+
+        function initializeGame() {
+            targetNumber = Math.floor(Math.random() * 100) + 1;
+            attempts = 0;
+            gameActive = true;
+            updateDisplay();
+            document.getElementById('message').textContent = '게임을 시작해보세요!';
+            document.getElementById('guessInput').value = '';
+        }
+
+        function checkGuess() {
+            if (!gameActive) return;
+
+            const input = document.getElementById('guessInput');
+            const guess = parseInt(input.value);
+            input.value = '';
+
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                document.getElementById('message').textContent = '1부터 100 사이의 숫자를 입력해주세요!';
+                return;
+            }
+
+            attempts++;
+            updateDisplay();
+
+            if (guess === targetNumber) {
+                gameActive = false;
+                const message = `축하합니다! ${attempts}번 만에 숫자를 맞추셨어요!`;
+                document.getElementById('message').textContent = message;
+                
+                if (bestScore === null || attempts < bestScore) {
+                    bestScore = attempts;
+                    updateDisplay();
+                }
+            } else if (guess < targetNumber) {
+                document.getElementById('message').textContent = '더 큰 숫자를 입력해보세요!';
+            } else {
+                document.getElementById('message').textContent = '더 작은 숫자를 입력해보세요!';
+            }
+        }
+
+        function updateDisplay() {
+            document.getElementById('currentAttempts').textContent = attempts;
+            document.getElementById('bestScore').textContent = bestScore === null ? '-' : bestScore;
+        }
+
+        function startNewGame() {
+            initializeGame();
+        }
+
+        // Enter 키 입력 처리
+        document.getElementById('guessInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkGuess();
+            }
+        });
+
+        // 게임 초기화
+        initializeGame();
+    </script>
+</body>
+</html>
